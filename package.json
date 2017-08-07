@@ -82,7 +82,10 @@
     "jest": "^20",
     "jest-supertest-matchers": "*",
     "nodemon": "*",
+    "postcss-cssnext": "^3.0.2",
+    "postcss-import": "^10.0.0",
     "postcss-loader": "^2.0.6",
+    "sugarss": "^1.0.0",
     "supertest": "*"
   }
 }

@@ -1,4 +1,4 @@
-export default () => ({
+module.exports = {
   parser: 'sugarss',
   plugins: {
     'postcss-import': {},
@@ -6,4 +6,4 @@ export default () => ({
     autoprefixer: {},
     cssnano: {},
   },
-});
+};
