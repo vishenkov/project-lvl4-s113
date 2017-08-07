@@ -1,0 +1,20 @@
+# NODE.JS
+/node_modules/
+npm-debug.log
+*.log
+
+# Workspace
+dist
+.env
+flow-typed
+.tern-port
+*.sqlite
+public/assets
+
+# OS
+.DS_Store
+
+# Editors
+*.sublime-project
+*.sublime-workspace
+.vscode

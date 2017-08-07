@@ -1,0 +1,87 @@
+{
+  "name": "task-manager",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "bin": {
+    "task-manager": "dist/bin/task-manager.js"
+  },
+  "engines": {
+    "node": "7.7.1"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "scripts": {
+    "gulp": "gulp",
+    "nodemon": "nodemon",
+    "test": "jest",
+    "babel-node": "babel-node",
+    "flow": "flow",
+    "flow-typed": "flow-typed",
+    "start": "gulp server",
+    "eslint": "eslint",
+    "webpack": "webpack",
+    "build": "npm run webpack -- -p --env production && babel src --out-dir dist --source-maps inline",
+    "postinstall": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vishenkov/project-lvl4-s113.git"
+  },
+  "author": "Kirill Vishenkov <vishkir1991@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vishenkov/project-lvl4-s113.git/issues"
+  },
+  "homepage": "https://github.com/vishenkov/project-lvl4-s113.git#readme",
+  "dependencies": {
+    "babel-cli": "*",
+    "babel-core": "*",
+    "babel-loader": "*",
+    "babel-plugin-transform-runtime": "*",
+    "babel-polyfill": "*",
+    "babel-preset-env": "*",
+    "babel-preset-flow": "*",
+    "babel-preset-stage-0": "*",
+    "bootstrap": "4.0.0-alpha.6",
+    "css-loader": "*",
+    "debug": "*",
+    "dotenv": "*",
+    "gulp": "*",
+    "gulp-util": "*",
+    "jquery": "*",
+    "jquery-ujs": "*",
+    "koa": "*",
+    "koa-bodyparser": "*",
+    "koa-flash-simple": "*",
+    "koa-generic-session": "*",
+    "koa-logger": "*",
+    "koa-methodoverride": "*",
+    "koa-pug": "*",
+    "koa-router": "next",
+    "koa-static": "*",
+    "koa-webpack": "*",
+    "lodash": "*",
+    "pg": "*",
+    "rollbar": "^2.1.1",
+    "sequelize": "*",
+    "sqlite3": "*",
+    "style-loader": "*",
+    "umzug": "*",
+    "webpack": "*"
+  },
+  "devDependencies": {
+    "babel-eslint": "*",
+    "eslint": "*",
+    "eslint-config-airbnb-base": "*",
+    "eslint-plugin-flowtype": "*",
+    "eslint-plugin-import": "*",
+    "flow-bin": "^0.46",
+    "flow-typed": "*",
+    "jest": "^20",
+    "jest-supertest-matchers": "*",
+    "nodemon": "*",
+    "supertest": "*"
+  }
+}
