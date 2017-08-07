@@ -1,4 +1,4 @@
-install: install-deps install-flow-typed
+install:  npm install
 
 console:
 	npm run gulp console
@@ -8,9 +8,6 @@ init:
 
 start:
 	DEBUG="application:*" npm run nodemon -- --watch src --ext '.js,.pug' --exec npm run gulp -- server
-
-install-deps:
-	yarn
 
 install-flow-typed:
 	npm run flow-typed install
