@@ -69,6 +69,7 @@
     "postcss-loader": "^2.0.6",
     "rollbar": "^2.1.1",
     "sequelize": "*",
+    "sugarss": "^1.0.0",
     "sqlite3": "*",
     "style-loader": "*",
     "umzug": "*",
@@ -85,7 +86,6 @@
     "jest": "^20",
     "jest-supertest-matchers": "*",
     "nodemon": "*",
-    "sugarss": "^1.0.0",
     "supertest": "*"
   }
 }
