@@ -10,3 +10,14 @@
 make install
 ```
 
+### db initialization
+
+```
+make db
+```
+
+### start server
+
+```
+make start
+```
