@@ -1,9 +1,6 @@
 module.exports = {
-  parser: 'sugarss',
-  plugins: {
-    'postcss-import': {},
-    'postcss-cssnext': {},
-    autoprefixer: {},
-    cssnano: {},
-  },
+  plugins: [
+    // eslint-disable-next-line
+    require('autoprefixer'),
+  ],
 };

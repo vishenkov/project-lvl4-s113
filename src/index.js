@@ -37,6 +37,7 @@ export default () => {
   app.use(bodyParser());
   app.use(methodOverride((req) => {
     if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+      // eslint-disable-next-line
       return req.body._method;
     }
     return req;

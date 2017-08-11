@@ -21,9 +21,18 @@ export default () => ({
       {
         test: /\.css$/,
         use: [
-          'style-loader',
-          { loader: 'css-loader', options: { importLoaders: 1 } },
-          'postcss-loader',
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+            },
+          },
+          {
+            loader: 'postcss-loader',
+          },
         ],
       },
     ],
@@ -33,14 +42,13 @@ export default () => ({
       $: 'jquery',
       jQuery: 'jquery',
       'window.jQuery': 'jquery',
+      Tether: 'tether',
+      'window.Tether': 'tether',
+      autoprefixer: 'autoprefixer',
     }),
     new webpack.optimize.CommonsChunkPlugin({
-      // This name 'vendor' ties into the entry definition
       name: 'vendor',
-      // We don't want the default vendor.js name
       filename: 'vendor.js',
-      // Passing Infinity just creates the commons chunk, but moves no modules into it.
-      // In other words, we only put what's in the vendor entry definition in vendor-bundle.js
       minChunks: Infinity,
     }),
   ],
