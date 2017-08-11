@@ -16,6 +16,9 @@ build:
 	rm -rf dist
 	npm run build
 
+db:
+	npm run gulp init
+
 test:
 	NODE_ENV=test npm test
 
