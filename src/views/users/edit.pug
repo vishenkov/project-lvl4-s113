@@ -1,0 +1,10 @@
+extends /layouts/application.pug
+
+block content
+  +formFor(f, { url: urlFor('editUser'), query: '?_method=put' , method: 'post' })
+    +input(f, 'firstName')
+    +input(f, 'lastName')
+    +button(f)
+
+  a.nav-link(href=urlFor('resetPswdUser')) Reset Password
+  a.nav-link(href=urlFor('deleteUser') data-method='delete' rel='nofollow') Delete User

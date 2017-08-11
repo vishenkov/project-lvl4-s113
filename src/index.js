@@ -19,11 +19,12 @@ import rollbar from './lib/rollbar';
 import getWebpackConfig from '../webpack.config.babel';
 import addRoutes from './controllers';
 import container from './container';
+import logger from './lib/logger';
 
 
 export default () => {
   const app = new Koa();
-
+  logger('APP CREATED!');
   app.keys = ['some secret hurr'];
   app.use(session(app));
   app.use(flash());
@@ -35,12 +36,19 @@ export default () => {
     await next();
   });
   app.use(bodyParser());
+  app.use(async (ctx, next) => {
+  // the parsed body will store in ctx.request.body
+  // if nothing was parsed, body will be an empty object {}
+    ctx.body = { ...ctx.request.body, ...ctx.request.query };
+    ctx.request.body = { ...ctx.body };
+    await next();
+  });
   app.use(methodOverride((req) => {
     if (req.body && typeof req.body === 'object' && '_method' in req.body) {
       // eslint-disable-next-line
       return req.body._method;
     }
-    return req;
+    return null;
   }));
   app.use(serve(path.join(__dirname, '..', 'public')));
 

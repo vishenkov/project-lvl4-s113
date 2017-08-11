@@ -1,7 +1,7 @@
 - const getInputName = (f, property) => `${f.name}[${property}]`
 
 mixin formFor(f, options = {})
-  form(action=_.get(options, 'url') method=_.get(options, 'method', 'get'))
+  form(action=`${_.get(options, 'url')}${_.get(options, 'query', '')}` method=_.get(options, 'method', 'get'))
     block
 
 mixin input(f, property, options = { as: 'text' })
