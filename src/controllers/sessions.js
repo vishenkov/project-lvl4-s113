@@ -22,7 +22,7 @@ export default (router, { User }) => {
 
       ctx.status = 422;
       ctx.flash.set('Email or Password were wrong');
-      ctx.render('session/new', { f: buildFormObj({ email }) });
+      ctx.render('sessions/new', { f: buildFormObj({ email }) });
     })
     .delete('session', '/session', (ctx) => {
       ctx.session = {};
