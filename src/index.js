@@ -25,7 +25,7 @@ import logger from './lib/logger';
 export default () => {
   const app = new Koa();
   logger('APP CREATED!');
-  app.keys = ['some secret hurr'];
+  app.keys = [process.env.COOKIE_KEY];
   app.use(session(app));
   app.use(flash());
   app.use(async (ctx, next) => {
