@@ -35,10 +35,12 @@ export default () => {
     };
     await next();
   });
+
   app.use(bodyParser());
   app.use(async (ctx, next) => {
-  // the parsed body will store in ctx.request.body
-  // if nothing was parsed, body will be an empty object {}
+    // the parsed body will store in ctx.request.body
+    // if nothing was parsed, body will be an empty object {}
+    // logger(ctx);
     ctx.request.body = { ...ctx.request.body, ...ctx.request.query };
     await next();
   });
@@ -55,7 +57,7 @@ export default () => {
     try {
       await next();
     } catch (err) {
-      rollbar.log(err.message);
+      rollbar.log(err);
       ctx.status = err.status || 500;
       ctx.body = err.message;
       ctx.app.emit('error', err, ctx);

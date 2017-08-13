@@ -1,0 +1,6 @@
+extends /layouts/application.pug
+
+block content
+  +formFor(f, { url: urlFor('deleteUser'), query: '?_method=delete', method: 'post' })
+    +input(f, 'password', { as: 'password', labelName: 'Please, enter the password' })
+    +button(f, { value: 'Delete' })
