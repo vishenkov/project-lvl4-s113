@@ -37,13 +37,6 @@ export default () => {
   });
 
   app.use(bodyParser());
-  app.use(async (ctx, next) => {
-    // the parsed body will store in ctx.request.body
-    // if nothing was parsed, body will be an empty object {}
-    // logger(ctx);
-    ctx.request.body = { ...ctx.request.body, ...ctx.request.query };
-    await next();
-  });
   app.use(methodOverride((req) => {
     if (req.body && typeof req.body === 'object' && '_method' in req.body) {
       // eslint-disable-next-line

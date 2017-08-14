@@ -3,12 +3,11 @@
 mixin formFor(f, options = {})
   - const url = _.get(options, 'url');
   - const method = _.get(options, 'method', 'get').toLowerCase();
-  if (_.includes(['get', 'post'], method))
-    form(action= url method= method)
-      block
-  else
-    form(action=`${url}?_method=${method}` method='post')
-      block
+  - const isStandart = _.includes(['get', 'post'], method);
+  form(action= url method= isStandart ? method : 'post')
+    if !isStandart
+      input(name='_method' type='hidden' value= method)
+    block
 
 mixin input(f, property, options = { as: 'text', labelName: '' })
   - const value = f.object[property] === undefined ? '' : f.object[property]

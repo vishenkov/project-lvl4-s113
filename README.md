@@ -21,3 +21,11 @@ make db
 ```
 make start
 ```
+
+### .env
+
+```
+DATABASE_URL=
+ROLLBAR_TOCKEN=
+COOKIE_KEY=
+```
