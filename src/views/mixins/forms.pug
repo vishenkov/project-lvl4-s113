@@ -1,8 +1,14 @@
 - const getInputName = (f, property) => `${f.name}[${property}]`
 
 mixin formFor(f, options = {})
-  form(action=`${_.get(options, 'url')}${_.get(options, 'query', '')}` method=_.get(options, 'method', 'get'))
-    block
+  - const url = _.get(options, 'url');
+  - const method = _.get(options, 'method', 'get').toLowerCase();
+  if (_.includes(['get', 'post'], method))
+    form(action= url method= method)
+      block
+  else
+    form(action=`${url}?_method=${method}` method='post')
+      block
 
 mixin input(f, property, options = { as: 'text', labelName: '' })
   - const value = f.object[property] === undefined ? '' : f.object[property]
