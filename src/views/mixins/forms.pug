@@ -3,9 +3,9 @@
 mixin formFor(f, options = {})
   - const url = _.get(options, 'url');
   - const method = _.get(options, 'method', 'get').toLowerCase();
-  - const isStandart = _.includes(['get', 'post'], method);
-  form(action= url method= isStandart ? method : 'post')
-    if !isStandart
+  - const isStandard = _.includes(['get', 'post'], method);
+  form(action= url method= isStandard ? method : 'post')
+    if !isStandard
       input(name='_method' type='hidden' value= method)
     block
 

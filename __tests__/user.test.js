@@ -52,36 +52,36 @@ describe('requests', () => {
     expect(res).toHaveHTTPStatus(302);
   });
 
-  it('GET users/edit', async () => {
+  it('GET profile/edit', async () => {
     const res = await request.agent(server)
-      .get('/users/edit')
+      .get('/profile/edit')
       .set('Cookie', cookie);
     expect(res).toHaveHTTPStatus(200);
   });
 
-  it('PATCH users/edit', async () => {
+  it('PATCH profile/edit', async () => {
     const res = await request.agent(server)
-      .patch('/users/edit')
+      .patch('/profile/edit')
       .set('Cookie', cookie)
       .send({ form: { ...user1, firstName: faker.name.firstName() } });
     expect(res).toHaveHTTPStatus(302);
   });
 
-  it('PATCH users/edit/reset_password', async () => {
+  it('PATCH profile/edit/reset_password', async () => {
     const oldPass = user1.password;
     const newPass = faker.internet.password();
     user1 = { ...user1, password: newPass };
 
     const res = await request.agent(server)
-      .patch('/users/edit/reset_password')
+      .patch('/profile/edit/reset_password')
       .set('Cookie', cookie)
       .send({ form: { oldPass, newPass } });
     expect(res).toHaveHTTPStatus(302);
   });
 
-  it('DELETE users/edit/delete', async () => {
+  it('DELETE users/delete', async () => {
     const res = await request.agent(server)
-      .delete('/users/edit/delete')
+      .delete('/users')
       .set('Cookie', cookie)
       .send({ form: { ...user1 } });
     expect(res).toHaveHTTPStatus(302);
