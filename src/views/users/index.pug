@@ -10,7 +10,7 @@ block content
     tbody
       each user in users
         tr
-          td= user.fullName
           td
-            a.nav-link(href=urlFor('profile', user.id))= user.email
+            a.nav-link(href=urlFor('profile', user.id))= user.fullName
+          td= user.email
           td= user.createdAt

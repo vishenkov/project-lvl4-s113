@@ -1,0 +1,25 @@
+mixin tasksLayout(tasks = [])
+  table.table.table-stripped
+    thead
+      tr
+        th Name
+        th Description
+        th Created
+        th Status
+        th Creator
+        th Assigned to
+        th Tags
+    tbody
+      each task in tasks
+        tr
+          td
+            a.nav-link(href=urlFor('taskById', task.id))= task.name
+          td= task.description
+          td= task.createdAt
+          td= task.status.name
+          td
+            a.nav-link(href=urlFor('profile', task.creator.id))= task.creator.fullName
+          td= task.assignedTo.fullName
+          td
+            each tag in task.Tags
+              a.nav-link(href=urlFor('tag', tag.name))= tag.name

@@ -52,7 +52,7 @@ export default () => {
     } catch (err) {
       rollbar.log(err);
       ctx.status = err.status || 500;
-      ctx.body = err.message;
+      ctx.render('error', { ...err });
       ctx.app.emit('error', err, ctx);
     }
   });

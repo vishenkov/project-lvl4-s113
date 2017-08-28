@@ -1,0 +1,6 @@
+extends /layouts/application.pug
+
+block content
+  +formFor(f, { url: urlFor('tags'), method: 'post' })
+    +input(f, 'name', { labelName: 'Name' })
+    +button(f)

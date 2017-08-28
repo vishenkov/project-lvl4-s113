@@ -18,6 +18,10 @@ build:
 
 db:
 	npm run gulp init
+	npm run gulp gendbbase
+
+gendb:
+	npm rum gulp gendb
 
 test:
 	NODE_ENV=test npm test

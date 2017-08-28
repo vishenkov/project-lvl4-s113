@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
 
-export default connect => connect.define('TaskTags', {
+export default connect => connect.define('TaskTag', {
   tag: {
     type: Sequelize.INTEGER,
     field: 'tag_id',

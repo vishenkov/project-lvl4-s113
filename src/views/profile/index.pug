@@ -1,6 +1,8 @@
 extends /layouts/application.pug
 
 block content
+  p= JSON.stringify(createdTasks)
+  p= JSON.stringify(assignedTasks)
   table.table.table-stripped
     thead
       tr
@@ -12,3 +14,9 @@ block content
         td= user.fullName
         td= user.email
         td= user.createdAt
+
+  p Created tasks
+  +tasksLayout(createdTasks)
+
+  p Assigned tasks
+  +tasksLayout(assignedTasks)

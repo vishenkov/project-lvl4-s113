@@ -52,6 +52,7 @@
     "file-loader": "^0.11.2",
     "gulp": "*",
     "gulp-util": "*",
+    "javascript-state-machine": "^3.0.1",
     "jquery": "*",
     "jquery-ujs": "*",
     "koa": "*",

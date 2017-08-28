@@ -1,0 +1,14 @@
+extends /layouts/application.pug
+
+block content
+  p= JSON.stringify(users)
+  p= JSON.stringify(f)
+  p= JSON.stringify(tags)
+  +formFor(f, { url: urlFor('taskById', task.id), method: 'patch' })
+    +input(f, 'name', { labelName: 'Name' })
+    +input(f, 'description', { labelName: 'Description' })
+    +select(f, 'assignedTo', users, { labelName: 'Assign to' })
+    +select(f, 'status', statuses, { labelName: 'Task status' })
+    +checkbox(f, 'tags', tags, { labelName: 'Tags' })
+    +input(f, 'newTags', { labelName: 'New tag' })
+    +button(f)

@@ -1,0 +1,23 @@
+extends /layouts/application.pug
+
+block content
+  table.table.table-stripped
+    thead
+      tr
+        th Name
+        th Description
+        th Created
+        th Status
+        th Creator
+        th Assigned to
+    tbody
+      tr
+        td= task.name
+        td= task.description
+        td= task.createdAt
+        td= task.status.name
+        td= task.creator.fullName
+        td= task.assignedTo.fullName
+
+  a.nav-link(href=urlFor('editTask', task.id)) Edit
+  a.nav-link(href=urlFor('taskById', task.id) data-method='delete' rel='nofollow') Delete

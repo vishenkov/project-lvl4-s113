@@ -7,11 +7,17 @@ export default (router, { User, logger }) => {
       const users = await User.findAll();
       ctx.render('users', { users });
     })
+
     .get('newUser', '/users/new', (ctx) => {
       const user = User.build();
       ctx.render('users/new', { f: buildFormObj(user) });
     })
+
     .get('deleteUser', '/users/delete', async (ctx) => {
+      if (!ctx.state.isSignedIn()) {
+        ctx.throw(401);
+        return;
+      }
       const user = await User.findOne({
         where: {
           id: ctx.session.userId,
@@ -19,7 +25,12 @@ export default (router, { User, logger }) => {
       });
       ctx.render('users/delete', { f: buildFormObj(user) });
     })
+
     .delete('users', '/users', async (ctx) => {
+      if (!ctx.state.isSignedIn()) {
+        ctx.throw(401);
+        return;
+      }
       const { password } = ctx.request.body.form;
       const user = await User.findOne({
         where: {
@@ -27,15 +38,16 @@ export default (router, { User, logger }) => {
         },
       });
       if (user && user.passwordDigest === encrypt(password)) {
-        user.destroy();
+        await user.destroy();
         ctx.flash.set('User has been deleted!');
         ctx.session = {};
         ctx.redirect(router.url('root'));
         return;
       }
-      ctx.flash.set('Password were wrong');
+      ctx.flash.set('Password was wrong');
       ctx.render('users/delete', { f: buildFormObj(user) });
     })
+
     .post('users', '/users', async (ctx) => {
       const form = ctx.request.body.form;
       const user = User.build(form);

@@ -1,0 +1,15 @@
+extends /layouts/application.pug
+
+block content
+  p= JSON.stringify(tags)
+  table.table.table-stripped
+    thead
+      tr
+        th Name
+        th Created At
+    tbody
+      each tag in tags
+        tr
+          td
+            a.nav-link(href=urlFor('tag', tag.name))= tag.name
+          td= tag.createdAt

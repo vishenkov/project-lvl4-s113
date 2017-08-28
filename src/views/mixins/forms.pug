@@ -17,6 +17,28 @@ mixin input(f, property, options = { as: 'text', labelName: '' })
     if f.errors[property]
       .form-control-feedback= f.errors[property].map(({ message }) => message).join('. ')
 
+mixin select(f, property, elements, options = {})
+  - const value = f.object[property] === undefined ? '' : f.object[property]
+  .form-group(class=(f.errors[property] && 'has-danger'))
+    label= options['labelName']
+    select(name=getInputName(f, property) class='form-control')
+      each element in elements
+        option(value= element.value selected= element.selected)= element.text
+
+mixin checkbox(f, property, elements, options = {})
+  - const value = f.object[property] === undefined ? '' : f.object[property]
+  .form-group(class=(f.errors[property] && 'has-danger'))
+    label= options['labelName']
+    fieldset
+      each element in elements
+        label= element.text
+        input(
+          name=getInputName(f, property)
+          class='form-control'
+          type="checkbox"
+          checked= element.checked
+          value=element.value)
+
 mixin button(f, options = { type: 'submit', value: 'Save' })
   .form-group
     input(class='btn' type=options['type'] ? options['type'] : 'submit' value=options['value'])

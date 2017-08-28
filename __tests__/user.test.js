@@ -49,6 +49,7 @@ describe('requests', () => {
     // console.log(res);
     const cookieReg = /koa\.sid(\.sig)*?=(.)*?;/gi;
     cookie = res.headers['set-cookie'][0].match(cookieReg).join(' ').slice(0, -1);
+    // console.log(cookie);
     expect(res).toHaveHTTPStatus(302);
   });
 
