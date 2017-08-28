@@ -1,9 +1,6 @@
 extends /layouts/application.pug
 
 block content
-  p= JSON.stringify(users)
-  p= JSON.stringify(f)
-  p= JSON.stringify(tags)
   +formFor(f, { url: urlFor('taskById', task.id), method: 'patch' })
     +input(f, 'name', { labelName: 'Name' })
     +input(f, 'description', { labelName: 'Description' })
