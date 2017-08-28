@@ -20,23 +20,45 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
         ctx.throw(401);
         return;
       }
+
       const task = Task.build();
-      const rawUsers = await User.findAll({
-        where: {
-          id: {
-            $ne: ctx.session.userId,
-          },
-        },
-      });
+      const rawUsers = await User.findAll();
       const users = rawUsers.map(user => ({
         value: user.id,
-        text: user.fullName,
+        text: user.id === ctx.session.userId ? '>> me <<' : user.fullName,
+        selected: task.assignedToId === user.id,
       }));
-      users.unshift({
-        value: ctx.session.userId,
-        text: '>> me <<',
+
+      const rawTags = await Tag.findAll();
+      const tags = rawTags.map(tag => ({
+        text: tag.name,
+        value: tag.id,
+      }));
+
+      ctx.render('tasks/new', { f: buildFormObj(task), users, tags });
+    })
+
+    .get('tasksByStatus', '/tasks/status/:status', async (ctx) => {
+      const status = await TaskStatus.findOne({
+        where: {
+          name: ctx.params.status,
+        },
       });
-      ctx.render('tasks/new', { f: buildFormObj(task), users });
+      if (!status) {
+        ctx.throw(404);
+      }
+      const tasks = await Task.findAll({
+        where: {
+          TaskStatusId: status.id,
+        },
+        include: [
+          { model: User, as: 'creator' },
+          { model: User, as: 'assignedTo' },
+          { model: TaskStatus, as: 'status' },
+          { model: Tag },
+        ],
+      });
+      ctx.render('tasks/status', { tasks });
     })
 
     .post('tasks', '/tasks', async (ctx) => {
@@ -44,6 +66,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
         ctx.throw(401);
         return;
       }
+
       const form = ctx.request.body.form;
       const taskKeys = Object.keys(form).filter(key =>
         !_.includes(['assignedTo', 'tags', 'newTags', 'status'], key));
@@ -67,8 +90,28 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
           name: 'new',
         },
       });
+
+      const newTags = (form.newTags instanceof Array ? form.newTags : [form.newTags])
+        .reduce((acc, name) => {
+          if (name) {
+            return [...acc, Tag.build({ name })];
+          }
+          return acc;
+        }, []);
+
+      const selectedTags = await Tag.findAll({
+        where: {
+          id: {
+            $in: form.tags instanceof Array ? form.tags : [form.tags],
+          },
+        },
+      });
+
       let task;
       try {
+        if (newTags) {
+          await Promise.all(newTags.map(tag => tag.save()));
+        }
         task = await Task.create(
           {
             ...taskBuild,
@@ -83,6 +126,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
             ],
           });
 
+        await task.setTags([...selectedTags, ...newTags]);
         ctx.flash.set('Task has been created!');
         ctx.redirect(router.url('root'));
       } catch (e) {

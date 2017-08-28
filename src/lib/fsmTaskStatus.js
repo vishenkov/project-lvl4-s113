@@ -7,7 +7,7 @@ export default (init = 'new') => {
       { name: 'atWork', from: 'new', to: 'atWork' },
       { name: 'testing', from: 'atWork', to: 'testing' },
       { name: 'atWork', from: 'testing', to: 'atWork' },
-      { name: 'finshed', from: 'testing', to: 'finished' },
+      { name: 'finished', from: 'testing', to: 'finished' },
     ],
   });
   return fsm;

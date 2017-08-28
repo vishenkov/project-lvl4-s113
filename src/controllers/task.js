@@ -61,7 +61,7 @@ export default (router, { Task, User, TaskStatus, TaskTag, Tag, logger }) => {
         const statuses = [...availableStatuses, task.status].map(status => ({
           value: status.id,
           text: status.name,
-          checked: status.id === task.statusId,
+          selected: status.id === task.status.id,
         }));
         logger(statuses);
         ctx.render('task/edit', { f: buildFormObj(task), task, users, tags, statuses });

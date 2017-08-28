@@ -16,7 +16,8 @@ mixin tasksLayout(tasks = [])
             a.nav-link(href=urlFor('taskById', task.id))= task.name
           td= task.description
           td= task.createdAt
-          td= task.status.name
+          td
+            a.nav-link(href=urlFor('tasksByStatus', task.status.name))= task.status.name
           td
             a.nav-link(href=urlFor('profile', task.creator.id))= task.creator.fullName
           td= task.assignedTo.fullName
