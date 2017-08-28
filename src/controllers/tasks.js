@@ -49,7 +49,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
       }
       const tasks = await Task.findAll({
         where: {
-          TaskStatusId: status.id,
+          taskStatusId: status.id,
         },
         include: [
           { model: User, as: 'creator' },
