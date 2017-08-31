@@ -1,7 +1,7 @@
 extends /layouts/application.pug
 
 block content
-  +formFor(f, { url: urlFor('taskById', task.id), method: 'patch' })
+  +formFor(f, { url: urlFor('task', task.id), method: 'patch' })
     +input(f, 'name', { labelName: 'Name' })
     +input(f, 'description', { labelName: 'Description' })
     +select(f, 'assignedTo', users, { labelName: 'Assign to' })

@@ -20,4 +20,4 @@ block content
         td= task.assignedTo.fullName
 
   a.nav-link(href=urlFor('editTask', task.id)) Edit
-  a.nav-link(href=urlFor('taskById', task.id) data-method='delete' rel='nofollow') Delete
+  a.nav-link(href=urlFor('task', task.id) data-method='delete' rel='nofollow') Delete
