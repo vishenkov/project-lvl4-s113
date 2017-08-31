@@ -1,7 +1,9 @@
 import buildFormObj from '../lib/formObjectBuilder';
 import encrypt from '../lib/secure';
 
-export default (router, { User, logger }) => {
+export default (router, { User, TaskStatus, Tag, logger }) => {
+  const log = logger('users');
+
   router
     .get('users', '/users', async (ctx) => {
       const users = await User.findAll();
@@ -13,17 +15,33 @@ export default (router, { User, logger }) => {
       ctx.render('users/new', { f: buildFormObj(user) });
     })
 
-    .get('deleteUser', '/users/delete', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .get('user', '/users/:id', async (ctx) => {
       const user = await User.findOne({
         where: {
-          id: ctx.session.userId,
+          id: ctx.params.id,
         },
       });
-      ctx.render('users/delete', { f: buildFormObj(user) });
+      const createdTasks = await user.getCreatedTasks({
+        include: [
+          { model: User, as: 'creator' },
+          { model: User, as: 'assignedTo' },
+          { model: TaskStatus, as: 'status' },
+          { model: Tag },
+        ],
+      });
+      const assignedTasks = await user.getAssignedTasks({
+        include: [
+          { model: User, as: 'creator' },
+          { model: User, as: 'assignedTo' },
+          { model: TaskStatus, as: 'status' },
+          { model: Tag },
+        ],
+      });
+      if (user) {
+        ctx.render('users/user', { user, createdTasks, assignedTasks });
+      } else {
+        ctx.throw(404);
+      }
     })
 
     .delete('users', '/users', async (ctx) => {
@@ -56,7 +74,7 @@ export default (router, { User, logger }) => {
         ctx.flash.set('User has been created!');
         ctx.redirect(router.url('root'));
       } catch (e) {
-        logger(e);
+        log(e);
         ctx.render('users/new', { f: buildFormObj(user, e) });
       }
     });

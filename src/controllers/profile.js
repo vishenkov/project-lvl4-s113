@@ -1,7 +1,9 @@
 import buildFormObj from '../lib/formObjectBuilder';
 import encrypt from '../lib/secure';
 
-export default (router, { User, TaskStatus, Tag, logger }) => {
+export default (router, { User, logger }) => {
+  const log = logger('profile');
+
   router
     .get('editUser', '/profile/edit', async (ctx) => {
       if (!ctx.state.isSignedIn()) {
@@ -29,33 +31,17 @@ export default (router, { User, TaskStatus, Tag, logger }) => {
       ctx.render('profile/reset_password', { f: buildFormObj(user) });
     })
 
-    .get('profile', '/profile/:id', async (ctx) => {
+    .get('deleteUser', '/profile/delete', async (ctx) => {
+      if (!ctx.state.isSignedIn()) {
+        ctx.throw(401);
+        return;
+      }
       const user = await User.findOne({
         where: {
-          id: ctx.params.id,
+          id: ctx.session.userId,
         },
       });
-      const createdTasks = await user.getCreatedTasks({
-        include: [
-          { model: User, as: 'creator' },
-          { model: User, as: 'assignedTo' },
-          { model: TaskStatus, as: 'status' },
-          { model: Tag },
-        ],
-      });
-      const assignedTasks = await user.getAssignedTasks({
-        include: [
-          { model: User, as: 'creator' },
-          { model: User, as: 'assignedTo' },
-          { model: TaskStatus, as: 'status' },
-          { model: Tag },
-        ],
-      });
-      if (user) {
-        ctx.render('profile', { user, createdTasks, assignedTasks });
-      } else {
-        ctx.throw(404);
-      }
+      ctx.render('profile/delete', { f: buildFormObj(user) });
     })
 
     .patch('resetPswdUser', '/profile/edit/reset_password', async (ctx) => {
@@ -81,9 +67,9 @@ export default (router, { User, TaskStatus, Tag, logger }) => {
               },
             });
           ctx.flash.set('Password has been updated!');
-          ctx.redirect(router.url('resetPswdUser'));
+          ctx.redirect(router.url('users'));
         } catch (e) {
-          logger(e);
+          log(e);
           ctx.render('profile/reset_password', { f: buildFormObj(user, e) });
         }
         return;
@@ -113,7 +99,7 @@ export default (router, { User, TaskStatus, Tag, logger }) => {
         ctx.flash.set('User has been updated!');
         ctx.redirect(router.url('editUser'));
       } catch (e) {
-        logger(e);
+        log(e);
         ctx.render('profile/edit', { f: buildFormObj(user, e) });
       }
     });
