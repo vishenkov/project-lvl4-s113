@@ -23,4 +23,4 @@ mixin tasksLayout(tasks = [])
           td= task.assignedTo.fullName
           td
             each tag in task.Tags
-              a.nav-link(href=urlFor('tag', tag.name))= tag.name
+              a.nav-link(href=urlFor('tag', tag.id))= tag.name

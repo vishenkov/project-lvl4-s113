@@ -1,0 +1,8 @@
+extends /layouts/application.pug
+
+block content
+  +formFor(f, { url: urlFor('tag', tag.id), method: 'patch' })
+    +input(f, 'name', { labelName: 'Name' })
+    +button(f)
+
+  a.nav-link(href=urlFor('tag', tag.id) data-method='delete' rel='nofollow') Delete

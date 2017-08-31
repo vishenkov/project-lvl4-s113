@@ -10,5 +10,5 @@ block content
       each tag in tags
         tr
           td
-            a.nav-link(href=urlFor('tag', tag.name))= tag.name
+            a.nav-link(href=urlFor('tag', tag.id))= tag.name
           td= tag.createdAt
