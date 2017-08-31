@@ -1,26 +1,48 @@
+mixin getStatusBadge(name)
+  case name
+    when 'new'
+      span.badge.badge-pill.badge-primary= name
+    when 'atWork'
+      span.badge.badge-pill.badge-default= name
+    when 'testing'
+      span.badge.badge-pill.badge-warning= name
+    when 'finished'
+      span.badge.badge-pill.badge-success= name
+    default
+      span.badge.badge-pill.badge-default= name
+
+mixin getTaskCard(task)
+  .card.card-outline-secondary
+    .card-header
+      .row.mb-1
+        .col-md-10
+          a.mr-2(href=urlFor('task', task.id))= task.name
+          +getStatusBadge(task.status.name)
+        .col-md-2
+          a.dropdown-toggle.d-flex.justify-content-end(data-toggle='dropdown')
+          .dropdown-menu
+            a.dropdown-item(href=urlFor('task', task.id)) Open
+            a.dropdown-item(href=urlFor('editTask', task.id)) Edit
+            .dropdown-divider(role='separator')
+            a.dropdown-item.text-danger(href=urlFor('task', task.id) data-method='delete' rel='nofollow') Delete
+      .row.small.text-muted
+        .col-12.d-flex.justify-content-between.bd-highlight
+          .text-left.mr-1
+            span Creator: 
+            a.text-muted(href=urlFor('user', task.creator.id))= task.creator.fullName
+          .text-right
+            span Assigned to: 
+            a.text-muted(href=urlFor('user', task.assignedTo.id))= task.assignedTo.fullName
+    .card-block
+      p.card-text= task.description
+    .card-footer
+      .row.small.text-muted
+        p.card-text Tags: 
+          each tag, index in task.Tags
+            a(href=urlFor('tag', tag.id)) #{tag.name}#{index === task.Tags.length - 1 ? '' : ', '}
+
 mixin tasksLayout(tasks = [])
-  table.table.table-stripped
-    thead
-      tr
-        th Name
-        th Description
-        th Created
-        th Status
-        th Creator
-        th Assigned to
-        th Tags
-    tbody
+  .container-fluid
+    .card-columns
       each task in tasks
-        tr
-          td
-            a.nav-link(href=urlFor('task', task.id))= task.name
-          td= task.description
-          td= task.createdAt
-          td
-            a.nav-link(href=urlFor('tasksByStatus', task.status.id))= task.status.name
-          td
-            a.nav-link(href=urlFor('profile', task.creator.id))= task.creator.fullName
-          td= task.assignedTo.fullName
-          td
-            each tag in task.Tags
-              a.nav-link(href=urlFor('tag', tag.id))= tag.name
+        +getTaskCard(task)

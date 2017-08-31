@@ -6,15 +6,56 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
   const log = logger('tasks');
   router
     .get('tasks', '/tasks', async (ctx) => {
-      const tasks = await Task.findAll({
+      const query = ctx.query;
+      log('Task filter query: %o,', query);
+      const creator = { model: User, as: 'creator' };
+      if (query.creator) {
+        creator.where = { id: query.creator };
+      }
+      const assignedTo = { model: User, as: 'assignedTo' };
+      if (query.assignedTo) {
+        assignedTo.where = { id: query.assignedTo };
+      }
+      const status = { model: TaskStatus, as: 'status' };
+      if (query.status) {
+        status.where = { id: query.status };
+      }
+      const tag = { model: Tag };
+      if (query.tag) {
+        tag.where = { id: query.tag };
+      }
+
+      const dbQuery = {
         include: [
-          { model: User, as: 'creator' },
-          { model: User, as: 'assignedTo' },
-          { model: TaskStatus, as: 'status' },
-          { model: Tag },
+          creator,
+          assignedTo,
+          status,
+          tag,
         ],
-      });
-      ctx.render('tasks', { tasks });
+      };
+      log('DB query: %o', dbQuery);
+      const tasks = await Task.findAll(dbQuery);
+      const rawUsers = await User.findAll();
+      const users = rawUsers.map(user => ({
+        value: user.id,
+        text: user.id === ctx.session.userId ? '>> me <<' : user.fullName,
+      }));
+      users.unshift({ value: '', text: 'Any', selected: true });
+
+      const rawTags = await Tag.findAll();
+      const tags = rawTags.map(t => ({
+        text: t.name,
+        value: t.id,
+      }));
+      tags.unshift({ value: '', text: 'Any', selected: true });
+
+      const rawStatuses = await TaskStatus.findAll();
+      const statuses = rawStatuses.map(s => ({
+        value: s.id,
+        text: s.name,
+      }));
+      statuses.unshift({ value: '', text: 'Any', selected: true });
+      ctx.render('tasks', { tasks, users, tags, statuses });
     })
 
     .get('newTask', '/tasks/new', async (ctx) => {
@@ -60,7 +101,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
           { model: Tag },
         ],
       });
-      ctx.render('tasks/status', { tasks });
+      ctx.render('tasks/status', { tasks, status });
     })
 
     .get('editTask', '/tasks/:id/edit', async (ctx) => {

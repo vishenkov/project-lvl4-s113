@@ -2,4 +2,7 @@ extends /layouts/application.pug
 
 block content
   if message
-    p= message
+    jumbotron.jumbotron-fluid
+      .container
+        h1.display-3 Oops!
+        p.lead= message

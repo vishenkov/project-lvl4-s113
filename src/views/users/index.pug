@@ -1,16 +1,15 @@
 extends /layouts/application.pug
 
 block content
+  h3 Users
   table.table.table-stripped
     thead
       tr
         th Full Name
         th Email
-        th Created At
     tbody
       each user in users
         tr
           td
             a.nav-link(href=urlFor('user', user.id))= user.fullName
           td= user.email
-          td= user.createdAt

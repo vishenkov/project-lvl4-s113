@@ -1,14 +1,17 @@
 extends /layouts/application.pug
 
 block content
-  table.table.table-stripped
-    thead
-      tr
-        th Name
-        th Created At
-    tbody
-      each tag in tags
-        tr
-          td
-            a.nav-link(href=urlFor('tag', tag.id))= tag.name
-          td= tag.createdAt
+  h3.mb-2 Tags
+  each tag in tags
+    .row
+      form.form-inline(action=urlFor('tag', tag.id) method='post')
+        input(name='_method' type='hidden' value= 'patch')
+        input.form-control.mr-2(name='form[name]' type='text' value= tag.name)
+        button.btn.btn-outline-warning.my-2.mr-2(type='submit')
+          | Save
+      a.btn.btn-outline-danger.my-2(href=urlFor('tag', tag.id) data-method='delete') Delete
+  .row
+    form.form-inline(action=urlFor('tags') method='post')
+      input.form-control.mr-2(name='form[name]' type='text' placeholder='Add new tag')
+      button.btn.btn-outline-primary.my-2.mr-2(type='submit')
+        | Add

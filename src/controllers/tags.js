@@ -56,7 +56,7 @@ export default (router, { logger, Tag, User, TaskStatus }) => {
         });
         log(`Task by tag: ${tasks}`);
 
-        ctx.render('tags/tag', { tasks });
+        ctx.render('tags/tag', { tasks, tag });
       } else {
         ctx.throw(404);
       }
@@ -119,7 +119,7 @@ export default (router, { logger, Tag, User, TaskStatus }) => {
           id: ctx.params.id,
         },
       });
-      ctx.flash.set(`Tag '${ctx.params.name}' has been deleted!`);
+      ctx.flash.set('Tag has been deleted!');
       ctx.redirect(router.url('tags'));
     });
 };

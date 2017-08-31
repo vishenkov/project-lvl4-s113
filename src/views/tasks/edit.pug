@@ -1,9 +1,10 @@
 extends /layouts/application.pug
 
 block content
+  h3 Edit Task
   +formFor(f, { url: urlFor('task', task.id), method: 'patch' })
     +input(f, 'name', { labelName: 'Name' })
-    +input(f, 'description', { labelName: 'Description' })
+    +textarea(f, 'description', { labelName: 'Description' })
     +select(f, 'assignedTo', users, { labelName: 'Assign to' })
     +select(f, 'status', statuses, { labelName: 'Task status' })
     +checkbox(f, 'tags', tags, { labelName: 'Tags' })

@@ -2,6 +2,7 @@ extends /layouts/application.pug
 
 block content
   +formFor(f, { url: urlFor('session'), method: 'post' })
+    legend Sign In
     +input(f, 'email', { labelName: 'Email' })
     +input(f, 'password', { as: 'password', labelName: 'Password' })
-    +button(f, { value: 'Sign In' })
+    +button(f, { value: 'Sign In', decoration: 'primary' })

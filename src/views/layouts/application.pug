@@ -18,12 +18,11 @@ html(lang="en")
             a.nav-link(href=urlFor('users')) Users
           li.nav-item.active
             a.nav-link(href=urlFor('tasks')) Tasks
-          li.nav-item.active
-            a.nav-link(href=urlFor('newTask')) New task
+          if isSignedIn()
+            li.nav-item.active
+              a.nav-link(href=urlFor('newTask')) New task
           li.nav-item.active
             a.nav-link(href=urlFor('tags')) Tags
-          li.nav-item.active
-            a.nav-link(href=urlFor('newTag')) New tag
         ul.navbar-nav
           if isSignedIn()
             li.nav-item

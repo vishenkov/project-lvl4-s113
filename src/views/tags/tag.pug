@@ -1,4 +1,5 @@
 extends /layouts/application.pug
 
 block content
+  h3 Tasks by tag: #{tag.name}
   +tasksLayout(tasks)

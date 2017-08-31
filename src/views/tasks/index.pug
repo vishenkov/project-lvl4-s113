@@ -1,4 +1,26 @@
 extends /layouts/application.pug
 
 block content
+  nav.navbar.navbar-light.bg-faded
+    form.form-inline.my-2(action= '/tasks', method= 'get')
+      label.mr-2 Creator
+      select.form-control.form-control-sm.mr-2(name= 'creator')
+        each user in users
+          option(value= user.value, selected= user.selected)= user.text
+      label.mr-2 Assigned to
+      select.form-control.form-control-sm.mr-2(name= 'assignedTo')
+        each user in users
+          option(value= user.value, selected= user.selected)= user.text
+      label.mr-2 Tag
+      select.form-control.form-control-sm.mr-2(name= 'tag')
+        each tag in tags
+          option(value= tag.value, selected= tag.selected)= tag.text
+      label.mr-2 Status
+      select.form-control.form-control-sm.mr-2(name= 'status')
+        each status in statuses
+          option(value= status.value, selected= status.selected)= status.text
+      button.btn.btn-outline-success.my-2(type='submit')
+        | Search
+
+  h3 Tasks
   +tasksLayout(tasks)

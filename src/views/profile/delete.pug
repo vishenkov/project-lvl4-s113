@@ -1,6 +1,7 @@
 extends /layouts/application.pug
 
 block content
-  +formFor(f, { url: urlFor('users'), method: 'delete' })
+  h3 Delete User
+  +formFor(f, { url: urlFor('users'), method: 'delete', type: 'form-inline' })
     +input(f, 'password', { as: 'password', labelName: 'Please, enter the password' })
-    +button(f, { value: 'Delete' })
+    +button(f, { value: 'Delete', decoration: 'danger' })

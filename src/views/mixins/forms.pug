@@ -4,7 +4,8 @@ mixin formFor(f, options = {})
   - const url = _.get(options, 'url');
   - const method = _.get(options, 'method', 'get').toLowerCase();
   - const isStandard = _.includes(['get', 'post'], method);
-  form(action= url method= isStandard ? method : 'post')
+  - const type = _.get(options, 'type');
+  form(action= url method= isStandard ? method : 'post' class= type ? type : '')
     if !isStandard
       input(name='_method' type='hidden' value= method)
     block
@@ -14,6 +15,14 @@ mixin input(f, property, options = { as: 'text', labelName: '' })
   .form-group(class=(f.errors[property] && 'has-danger'))
     label= options['labelName']
     input(name=getInputName(f, property) class='form-control' type=options['as'] value=`${value}`)
+    if f.errors[property]
+      .form-control-feedback= f.errors[property].map(({ message }) => message).join('. ')
+
+mixin textarea(f, property, options = { as: 'text', labelName: '' })
+  - const value = f.object[property] === undefined ? '' : f.object[property]
+  .form-group(class=(f.errors[property] && 'has-danger'))
+    label= options['labelName']
+    textarea(name=getInputName(f, property) class='form-control' rows=3 value=`${value}`)
     if f.errors[property]
       .form-control-feedback= f.errors[property].map(({ message }) => message).join('. ')
 
@@ -28,17 +37,17 @@ mixin select(f, property, elements, options = {})
 mixin checkbox(f, property, elements, options = {})
   - const value = f.object[property] === undefined ? '' : f.object[property]
   .form-group(class=(f.errors[property] && 'has-danger'))
-    label= options['labelName']
-    fieldset
-      each element in elements
-        label= element.text
-        input(
-          name=getInputName(f, property)
-          class='form-control'
-          type="checkbox"
-          checked= element.checked
-          value=element.value)
+    legend= options['labelName']
+    each element in elements
+      .form-check.form-check-inline
+        label.form-check-label
+          input.form-check-input(
+            name=getInputName(f, property)
+            type='checkbox'
+            checked= element.checked
+            value=element.value)
+          span= element.text
 
-mixin button(f, options = { type: 'submit', value: 'Save' })
+mixin button(f, options = { type: 'submit', value: 'Save', decoration: 'primary' })
   .form-group
-    input(class='btn' type=options['type'] ? options['type'] : 'submit' value=options['value'])
+    input(class=`btn btn-${options.decoration}` type=options['type'] ? options['type'] : 'submit' value=options['value'])
