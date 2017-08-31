@@ -29,3 +29,6 @@ DATABASE_URL=
 ROLLBAR_TOCKEN=
 COOKIE_KEY=
 ```
+
+### DEMO
+heroku: https://sheltered-taiga-88027.herokuapp.com/

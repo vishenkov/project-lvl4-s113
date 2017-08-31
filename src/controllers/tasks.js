@@ -174,7 +174,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
           id: ctx.params.id,
         },
       });
-      
+
       if (rawTask) {
         const task = buildTaskObj(rawTask);
         ctx.render('tasks/task', { task });
