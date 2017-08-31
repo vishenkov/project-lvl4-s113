@@ -29,10 +29,10 @@ mixin getTaskCard(task)
         .col-12.d-flex.justify-content-between.bd-highlight
           .text-left.mr-1
             span Creator: 
-            a.text-muted(href=urlFor('user', task.creator.id))= task.creator.fullName
+            a.text-muted(href= task.creator.id ? urlFor('user', task.creator.id) : '#')= task.creator.fullName
           .text-right
             span Assigned to: 
-            a.text-muted(href=urlFor('user', task.assignedTo.id))= task.assignedTo.fullName
+            a.text-muted(href= task.assignedTo.id ? urlFor('user', task.assignedTo.id) : '#')= task.assignedTo.fullName
     .card-block
       p.card-text= task.description
     .card-footer

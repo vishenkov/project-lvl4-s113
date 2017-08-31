@@ -53,14 +53,14 @@ describe('requests', () => {
     expect(res).toHaveHTTPStatus(302);
   });
 
-  it('GET profile/edit', async () => {
+  it('GET /profile/edit', async () => {
     const res = await request.agent(server)
       .get('/profile/edit')
       .set('Cookie', cookie);
     expect(res).toHaveHTTPStatus(200);
   });
 
-  it('PATCH profile/edit', async () => {
+  it('PATCH /profile/edit', async () => {
     const res = await request.agent(server)
       .patch('/profile/edit')
       .set('Cookie', cookie)
@@ -68,7 +68,7 @@ describe('requests', () => {
     expect(res).toHaveHTTPStatus(302);
   });
 
-  it('PATCH profile/edit/reset_password', async () => {
+  it('PATCH /profile/edit/reset_password', async () => {
     const oldPass = user1.password;
     const newPass = faker.internet.password();
     user1 = { ...user1, password: newPass };
@@ -80,7 +80,7 @@ describe('requests', () => {
     expect(res).toHaveHTTPStatus(302);
   });
 
-  it('DELETE users/delete', async () => {
+  it('DELETE /users', async () => {
     const res = await request.agent(server)
       .delete('/users')
       .set('Cookie', cookie)

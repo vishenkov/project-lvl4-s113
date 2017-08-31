@@ -1,6 +1,9 @@
 import _ from 'lodash';
 import buildFormObj from '../lib/formObjectBuilder';
 import fsm from '../lib/fsmTaskStatus';
+import { checkAuth } from '../lib/middlewares';
+import { buildSelectObj, buildTasksObj, buildTaskObj } from '../lib/dataBuilders';
+
 
 export default (router, { Task, User, Tag, TaskStatus, logger }) => {
   const log = logger('tasks');
@@ -34,36 +37,28 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
         ],
       };
       log('DB query: %o', dbQuery);
-      const tasks = await Task.findAll(dbQuery);
+      const rawTasks = await Task.findAll(dbQuery);
+      const tasks = buildTasksObj(rawTasks);
+      log(tasks);
+
+      const baseValue = { value: '', text: 'Any', selected: true };
       const rawUsers = await User.findAll();
-      const users = rawUsers.map(user => ({
-        value: user.id,
-        text: user.id === ctx.session.userId ? '>> me <<' : user.fullName,
-      }));
-      users.unshift({ value: '', text: 'Any', selected: true });
+      const users = rawUsers.reduce((acc, user) =>
+        ([...acc, {
+          value: user.id,
+          text: user.id === ctx.session.userId ? '>> me <<' : user.fullName,
+        }]), [baseValue]);
 
       const rawTags = await Tag.findAll();
-      const tags = rawTags.map(t => ({
-        text: t.name,
-        value: t.id,
-      }));
-      tags.unshift({ value: '', text: 'Any', selected: true });
+      const tags = buildSelectObj(rawTags, baseValue);
 
       const rawStatuses = await TaskStatus.findAll();
-      const statuses = rawStatuses.map(s => ({
-        value: s.id,
-        text: s.name,
-      }));
-      statuses.unshift({ value: '', text: 'Any', selected: true });
+      const statuses = buildSelectObj(rawStatuses, baseValue);
+
       ctx.render('tasks', { tasks, users, tags, statuses });
     })
 
-    .get('newTask', '/tasks/new', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
-
+    .get('newTask', '/tasks/new', checkAuth, async (ctx) => {
       const task = Task.build();
       const rawUsers = await User.findAll();
       const users = rawUsers.map(user => ({
@@ -73,10 +68,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
       }));
 
       const rawTags = await Tag.findAll();
-      const tags = rawTags.map(tag => ({
-        text: tag.name,
-        value: tag.id,
-      }));
+      const tags = buildSelectObj(rawTags);
 
       ctx.render('tasks/new', { f: buildFormObj(task), users, tags });
     })
@@ -90,7 +82,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
       if (!status) {
         ctx.throw(404);
       }
-      const tasks = await Task.findAll({
+      const rawTasks = await Task.findAll({
         where: {
           taskStatusId: status.id,
         },
@@ -101,14 +93,12 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
           { model: Tag },
         ],
       });
+      const tasks = buildTasksObj(rawTasks);
+
       ctx.render('tasks/status', { tasks, status });
     })
 
-    .get('editTask', '/tasks/:id/edit', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .get('editTask', '/tasks/:id/edit', checkAuth, async (ctx) => {
       const task = await Task.findOne({
         include: [
           { model: User, as: 'creator' },
@@ -173,7 +163,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
     })
 
     .get('task', '/tasks/:id', async (ctx) => {
-      const task = await Task.findOne({
+      const rawTask = await Task.findOne({
         include: [
           { model: User, as: 'creator' },
           { model: User, as: 'assignedTo' },
@@ -184,19 +174,16 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
           id: ctx.params.id,
         },
       });
-      if (task) {
+      
+      if (rawTask) {
+        const task = buildTaskObj(rawTask);
         ctx.render('tasks/task', { task });
       } else {
         ctx.throw(404);
       }
     })
 
-    .post('tasks', '/tasks', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
-
+    .post('tasks', '/tasks', checkAuth, async (ctx) => {
       const form = ctx.request.body.form;
       const taskKeys = Object.keys(form).filter(key =>
         !_.includes(['assignedTo', 'tags', 'newTags', 'status'], key));
@@ -265,11 +252,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
       }
     })
 
-    .patch('task', '/tasks/:id', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .patch('task', '/tasks/:id', checkAuth, async (ctx) => {
       const form = ctx.request.body.form;
       log('Recieved post data to patch: %o', form);
       const taskKeys = Object.keys(form).filter(key =>
@@ -337,11 +320,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
       }
     })
 
-    .delete('task', '/tasks/:id', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .delete('task', '/tasks/:id', checkAuth, async (ctx) => {
       const task = await Task.findOne({
         where: {
           id: ctx.params.id,

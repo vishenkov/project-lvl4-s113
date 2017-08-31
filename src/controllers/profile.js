@@ -1,15 +1,12 @@
 import buildFormObj from '../lib/formObjectBuilder';
 import encrypt from '../lib/secure';
+import { checkAuth } from '../lib/middlewares';
 
 export default (router, { User, logger }) => {
   const log = logger('profile');
 
   router
-    .get('editUser', '/profile/edit', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .get('editUser', '/profile/edit', checkAuth, async (ctx) => {
       const user = await User.findOne({
         where: {
           id: ctx.session.userId,
@@ -18,11 +15,7 @@ export default (router, { User, logger }) => {
       ctx.render('profile/edit', { f: buildFormObj(user) });
     })
 
-    .get('resetPswdUser', '/profile/edit/reset_password', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .get('resetPswdUser', '/profile/edit/reset_password', checkAuth, async (ctx) => {
       const user = await User.findOne({
         where: {
           id: ctx.session.userId,
@@ -31,11 +24,7 @@ export default (router, { User, logger }) => {
       ctx.render('profile/reset_password', { f: buildFormObj(user) });
     })
 
-    .get('deleteUser', '/profile/delete', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .get('deleteUser', '/profile/delete', checkAuth, async (ctx) => {
       const user = await User.findOne({
         where: {
           id: ctx.session.userId,
@@ -44,11 +33,7 @@ export default (router, { User, logger }) => {
       ctx.render('profile/delete', { f: buildFormObj(user) });
     })
 
-    .patch('resetPswdUser', '/profile/edit/reset_password', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .patch('resetPswdUser', '/profile/edit/reset_password', checkAuth, async (ctx) => {
       const { newPass, oldPass } = ctx.request.body.form;
       const user = await User.findOne({
         where: {
@@ -79,11 +64,7 @@ export default (router, { User, logger }) => {
       ctx.redirect(router.url('resetPswdUser'));
     })
 
-    .patch('editUser', '/profile/edit', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .patch('editUser', '/profile/edit', checkAuth, async (ctx) => {
       const form = ctx.request.body.form;
       const user = User.build(form);
       try {

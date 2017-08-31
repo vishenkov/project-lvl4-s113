@@ -1,5 +1,6 @@
 import buildFormObj from '../lib/formObjectBuilder';
 import encrypt from '../lib/secure';
+import { checkAuth } from '../lib/middlewares';
 
 export default (router, { User, TaskStatus, Tag, logger }) => {
   const log = logger('users');
@@ -44,11 +45,7 @@ export default (router, { User, TaskStatus, Tag, logger }) => {
       }
     })
 
-    .delete('users', '/users', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .delete('users', '/users', checkAuth, async (ctx) => {
       const { password } = ctx.request.body.form;
       const user = await User.findOne({
         where: {

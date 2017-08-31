@@ -1,4 +1,7 @@
 import buildFormObj from '../lib/formObjectBuilder';
+import { checkAuth } from '../lib/middlewares';
+import { buildTasksObj } from '../lib/dataBuilders';
+
 
 export default (router, { logger, Tag, User, TaskStatus }) => {
   const log = logger('tags');
@@ -9,20 +12,12 @@ export default (router, { logger, Tag, User, TaskStatus }) => {
       ctx.render('tags', { tags });
     })
 
-    .get('newTag', '/tags/new', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .get('newTag', '/tags/new', checkAuth, async (ctx) => {
       const tag = Tag.build();
       ctx.render('tags/new', { f: buildFormObj(tag) });
     })
 
-    .get('editTag', '/tags/:id/edit', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .get('editTag', '/tags/:id/edit', checkAuth, async (ctx) => {
       const tag = await Tag.findOne({
         where: {
           id: ctx.params.id,
@@ -46,7 +41,7 @@ export default (router, { logger, Tag, User, TaskStatus }) => {
       log(`Tag by id: ${tag}`);
 
       if (tag) {
-        const tasks = await tag.getTasks({
+        const rawTasks = await tag.getTasks({
           include: [
             { model: User, as: 'creator' },
             { model: User, as: 'assignedTo' },
@@ -54,7 +49,8 @@ export default (router, { logger, Tag, User, TaskStatus }) => {
             { model: Tag },
           ],
         });
-        log(`Task by tag: ${tasks}`);
+        const tasks = buildTasksObj(rawTasks);
+        log(tasks);
 
         ctx.render('tags/tag', { tasks, tag });
       } else {
@@ -62,11 +58,7 @@ export default (router, { logger, Tag, User, TaskStatus }) => {
       }
     })
 
-    .post('tags', '/tags', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .post('tags', '/tags', checkAuth, async (ctx) => {
       const form = ctx.request.body.form;
       const tag = Tag.build(form);
 
@@ -80,11 +72,7 @@ export default (router, { logger, Tag, User, TaskStatus }) => {
       }
     })
 
-    .patch('tag', '/tags/:id', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .patch('tag', '/tags/:id', checkAuth, async (ctx) => {
       const form = ctx.request.body.form;
       const tag = await Tag.findOne({
         where: {
@@ -109,11 +97,7 @@ export default (router, { logger, Tag, User, TaskStatus }) => {
       }
     })
 
-    .delete('tag', '/tags/:id', async (ctx) => {
-      if (!ctx.state.isSignedIn()) {
-        ctx.throw(401);
-        return;
-      }
+    .delete('tag', '/tags/:id', checkAuth, async (ctx) => {
       await Tag.destroy({
         where: {
           id: ctx.params.id,

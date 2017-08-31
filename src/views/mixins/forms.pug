@@ -22,7 +22,8 @@ mixin textarea(f, property, options = { as: 'text', labelName: '' })
   - const value = f.object[property] === undefined ? '' : f.object[property]
   .form-group(class=(f.errors[property] && 'has-danger'))
     label= options['labelName']
-    textarea(name=getInputName(f, property) class='form-control' rows=3 value=`${value}`)
+    textarea(name=getInputName(f, property) class='form-control' rows=3)
+      | #{value}
     if f.errors[property]
       .form-control-feedback= f.errors[property].map(({ message }) => message).join('. ')
 

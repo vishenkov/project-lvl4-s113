@@ -24,6 +24,7 @@ describe('requests', () => {
       password: faker.internet.password(),
     };
     tag = {
+      id: faker.random.number({ min: 1000, max: 10000 }),
       name: faker.hacker.noun(),
     };
     task = {
@@ -69,23 +70,23 @@ describe('requests', () => {
     expect(res).toHaveHTTPStatus(302);
   });
 
-  it('GET /tag/:name', async () => {
+  it('GET /tags/:id', async () => {
     const res = await request.agent(server)
-      .get(`/tag/${tag.name}`);
+      .get(`/tags/${tag.id}`);
     expect(res).toHaveHTTPStatus(200);
   });
 
-  it('PATCH /tag/:name', async () => {
+  it('PATCH /tags/:id', async () => {
     const res = await request.agent(server)
-      .patch(`/tag/${tag.name}`)
+      .patch(`/tags/${tag.id}`)
       .set('Cookie', cookie)
       .send({ form: tag });
     expect(res).toHaveHTTPStatus(302);
   });
 
-  it('DELETE /tag/:name/delete', async () => {
+  it('DELETE /tags/:id', async () => {
     const res = await request.agent(server)
-      .delete(`/tag/${tag.name}`)
+      .delete(`/tags/${tag.id}`)
       .set('Cookie', cookie);
     expect(res).toHaveHTTPStatus(302);
   });
@@ -110,15 +111,15 @@ describe('requests', () => {
     expect(res).toHaveHTTPStatus(302);
   });
 
-  it('GET /task/:id', async () => {
+  it('GET /tasks/:id', async () => {
     const res = await request.agent(server)
-      .get(`/task/${task.id}`);
+      .get(`/tasks/${task.id}`);
     expect(res).toHaveHTTPStatus(200);
   });
 
-  it('PATCH /task/:id', async () => {
+  it('PATCH /tasks/:id', async () => {
     const res = await request.agent(server)
-      .patch(`/task/${task.id}`)
+      .patch(`/tasks/${task.id}`)
       .set('Cookie', cookie)
       .send({
         form: {
@@ -129,16 +130,16 @@ describe('requests', () => {
     expect(res).toHaveHTTPStatus(302);
   });
 
-  it('DELETE /task/:id', async () => {
+  it('DELETE /tasks/:id', async () => {
     const res = await request.agent(server)
-      .delete(`/task/${task.id}`)
+      .delete(`/tasks/${task.id}`)
       .set('Cookie', cookie);
     expect(res).toHaveHTTPStatus(302);
   });
 
-  it('GET deleted /task/:id', async () => {
+  it('GET deleted /tasks/:id', async () => {
     const res = await request.agent(server)
-      .get(`/task/${task.id}`);
+      .get(`/tasks/${task.id}`);
     expect(res).toHaveHTTPStatus(404);
   });
 
