@@ -5,7 +5,10 @@ export default connect => connect.define('Tag', {
     type: Sequelize.STRING,
     unique: true,
     validate: {
-      notEmpty: true,
+      notEmpty: {
+        arg: true,
+        msg: 'Please, define tag name!',
+      },
     },
   },
 }, {

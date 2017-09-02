@@ -5,4 +5,5 @@ block content
     +input(f, 'name', { labelName: 'Name' })
     +button(f)
 
-  a.btn.btn-outline-danger(href=urlFor('tag', tag.id) data-method='delete' rel='nofollow') Delete
+  +formFor(f, { url: urlFor('tag', tag.id), method: 'delete', dataConfirm: 'Are you sure you want to delete tag?' })
+    input.btn.btn-outline-danger(type='submit' value='Delete')

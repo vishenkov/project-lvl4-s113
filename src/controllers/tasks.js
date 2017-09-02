@@ -11,6 +11,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
     .get('tasks', '/tasks', async (ctx) => {
       const query = ctx.query;
       log('Task filter query: %o,', query);
+
       const creator = { model: User, as: 'creator' };
       if (query.creator) {
         creator.where = { id: query.creator };
@@ -67,10 +68,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
         selected: task.assignedToId === user.id,
       }));
 
-      const rawTags = await Tag.findAll();
-      const tags = buildSelectObj(rawTags);
-
-      ctx.render('tasks/new', { f: buildFormObj(task), users, tags });
+      ctx.render('tasks/new', { f: buildFormObj(task), users });
     })
 
     .get('tasksByStatus', '/tasks/status/:id', async (ctx) => {
@@ -117,27 +115,9 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
           selected: task.assignedToId === user.id,
         }));
 
-        const taskTags = await task.getTags();
-        const tagIds = taskTags.map(tag => tag.id);
-        const otherTags = await Tag.findAll({
-          where: {
-            id: {
-              $notIn: tagIds,
-            },
-          },
-        });
-        let tags = taskTags.map(tag => ({
-          text: tag.name,
-          value: tag.id,
-          checked: true,
-        }));
-        tags = otherTags.reduce((acc, tag) => ([
-          ...acc,
-          {
-            text: tag.name,
-            value: tag.id,
-          },
-        ]), tags);
+        const rawTags = await task.getTags();
+        const tags = rawTags.map(tag => tag.name).join(', ');
+        task.tags = tags;
 
         log('Prepared tags: %o', tags);
 
@@ -183,6 +163,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
       }
     })
 
+
     .post('tasks', '/tasks', checkAuth, async (ctx) => {
       const form = ctx.request.body.form;
       const taskKeys = Object.keys(form).filter(key =>
@@ -208,49 +189,42 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
         },
       });
 
-      const newTags = (form.newTags instanceof Array ? form.newTags : [form.newTags])
-        .reduce((acc, name) => {
-          if (name) {
-            return [...acc, Tag.build({ name })];
-          }
-          return acc;
-        }, []);
+      const reqTags = form.tags ? form.tags.split(',').map(tag => tag.trim()) : [];
 
-      const selectedTags = await Tag.findAll({
-        where: {
-          id: {
-            $in: form.tags instanceof Array ? form.tags : [form.tags],
-          },
-        },
+      const task = Task.build({
+        ...taskBuild,
+        creatorId: creator.id,
+        assignedToId: assignedUser.id,
+        taskStatusId: status.id,
+      }, {
+        include: [
+          { model: User, as: 'creator' },
+          { model: User, as: 'assignedTo' },
+          { model: TaskStatus, as: 'status' },
+        ],
       });
-
-      let task;
       try {
-        if (newTags) {
-          await Promise.all(newTags.map(tag => tag.save()));
-        }
-        task = await Task.create(
-          {
-            ...taskBuild,
-            creatorId: creator.id,
-            assignedToId: assignedUser.id,
-            taskStatusId: status.id,
-          }, {
-            include: [
-              { model: User, as: 'creator' },
-              { model: User, as: 'assignedTo' },
-              { model: TaskStatus, as: 'status' },
-            ],
-          });
+        await task.save();
 
-        await task.setTags([...selectedTags, ...newTags]);
+        await Promise.all(reqTags.map(async name =>
+          Tag.findOne({ where: { name } }).then(async tag =>
+            (tag ? task.addTag(tag) : task.createTag({ name })))));
+
         ctx.flash.set('Task has been created!');
         ctx.redirect(router.url('root'));
       } catch (e) {
         log(e);
-        ctx.render('tasks/new', { f: buildFormObj(task, e) });
+        log(buildFormObj(task, e));
+        const rawUsers = await User.findAll();
+        const users = rawUsers.map(user => ({
+          value: user.id,
+          text: user.id === ctx.session.userId ? '>> me <<' : user.fullName,
+          selected: task.assignedToId === user.id,
+        }));
+        ctx.render('tasks/new', { f: buildFormObj(task, e), users, tags: form.tags });
       }
     })
+
 
     .patch('task', '/tasks/:id', checkAuth, async (ctx) => {
       const form = ctx.request.body.form;
@@ -264,6 +238,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
       }, {});
       log('Task build object: %o', taskBuild);
 
+      const task = await Task.findById(ctx.params.id);
       const assignedUser = await User.findOne({
         where: {
           id: form.assignedTo,
@@ -275,43 +250,21 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
         },
       });
 
-      const newTags = (form.newTags instanceof Array ? form.newTags : [form.newTags])
-        .reduce((acc, name) => {
-          if (name) {
-            return [...acc, Tag.build({ name })];
-          }
-          return acc;
-        }, []);
-      // log('Build objects for new tags: %o', newTags);
-      const selectedTags = await Tag.findAll({
-        where: {
-          id: {
-            $in: form.tags instanceof Array ? form.tags : [form.tags],
-          },
-        },
-      });
+      const reqTags = form.tags ? form.tags.split(',').map(tag => tag.trim()) : [];
+      log('request tags: %o', reqTags);
 
       try {
-        if (newTags) {
-          await Promise.all(newTags.map(tag => tag.save()));
-        }
-        await Task.update(
-          {
-            ...taskBuild,
-          },
-          {
-            where: {
-              id: ctx.params.id,
-            },
-          });
-        const task = await Task.findOne({
-          where: {
-            id: ctx.params.id,
-          },
+        await task.update({
+          ...taskBuild,
         });
-        await task.setTags([...selectedTags, ...newTags]);
+
         await task.setAssignedTo(assignedUser);
         await task.setStatus(status);
+        await task.setTags([]);
+        await Promise.all(reqTags.map(async name =>
+          Tag.findOne({ where: { name } }).then(async tag =>
+            (tag ? task.addTag(tag) : task.createTag({ name })))));
+
         ctx.flash.set('Task has been updated!');
         ctx.redirect(router.url('tasks'));
       } catch (e) {

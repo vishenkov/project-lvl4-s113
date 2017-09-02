@@ -24,7 +24,8 @@ mixin getTaskCard(task)
             a.dropdown-item(href=urlFor('task', task.id)) Open
             a.dropdown-item(href=urlFor('editTask', task.id)) Edit
             .dropdown-divider(role='separator')
-            a.dropdown-item.text-danger(href=urlFor('task', task.id) data-method='delete' rel='nofollow') Delete
+            +formFor(f, { url: urlFor('task', task.id), method: 'delete', dataConfirm: 'Are you sure you want to delete?' })
+              input.dropdown-item.text-danger(type='submit' value='Delete')
       .row.small.text-muted
         .col-12.d-flex.justify-content-between.bd-highlight
           .text-left.mr-1

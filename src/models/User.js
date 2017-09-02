@@ -6,13 +6,19 @@ export default connect => connect.define('User', {
     type: Sequelize.STRING,
     unique: true,
     validate: {
-      isEmail: true,
+      isEmail: {
+        arg: true,
+        msg: 'Email is not valid',
+      },
     },
   },
   passwordDigest: {
     type: Sequelize.STRING,
     validate: {
-      notEmpty: true,
+      notEmpty: {
+        arg: true,
+        msg: 'Password can\'t be blank',
+      },
     },
   },
   firstName: {

@@ -4,7 +4,10 @@ export default connect => connect.define('Task', {
   name: {
     type: Sequelize.STRING,
     validate: {
-      notEmpty: true,
+      notEmpty: {
+        arg: true,
+        msg: 'Please, define task name!',
+      },
     },
   },
   description: {

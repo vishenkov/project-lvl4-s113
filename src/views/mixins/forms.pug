@@ -5,7 +5,8 @@ mixin formFor(f, options = {})
   - const method = _.get(options, 'method', 'get').toLowerCase();
   - const isStandard = _.includes(['get', 'post'], method);
   - const type = _.get(options, 'type');
-  form(action= url method= isStandard ? method : 'post' class= type ? type : '')
+  - const dataConfirm = _.get(options, 'dataConfirm');
+  form(action= url method= isStandard ? method : 'post' class= type ? type : '' data-confirm= dataConfirm ? dataConfirm : '')
     if !isStandard
       input(name='_method' type='hidden' value= method)
     block
