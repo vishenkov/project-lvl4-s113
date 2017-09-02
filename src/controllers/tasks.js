@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import buildFormObj from '../lib/formObjectBuilder';
-import fsm from '../lib/fsmTaskStatus';
 import { checkAuth } from '../lib/middlewares';
-import { buildSelectObj, buildTasksObj, buildTaskObj } from '../lib/dataBuilders';
+import { buildSelectObj, buildTasksObj, buildTaskObj, buildSelectUser, buildSelectStatus } from '../lib/dataBuilders';
 
 
 export default (router, { Task, User, Tag, TaskStatus, logger }) => {
@@ -62,11 +61,7 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
     .get('newTask', '/tasks/new', checkAuth, async (ctx) => {
       const task = Task.build();
       const rawUsers = await User.findAll();
-      const users = rawUsers.map(user => ({
-        value: user.id,
-        text: user.id === ctx.session.userId ? '>> me <<' : user.fullName,
-        selected: task.assignedToId === user.id,
-      }));
+      const users = buildSelectUser(rawUsers, ctx.session.userId, task.assignedToId);
 
       ctx.render('tasks/new', { f: buildFormObj(task), users });
     })
@@ -109,32 +104,14 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
       });
       if (task) {
         const rawUsers = await User.findAll();
-        const users = rawUsers.map(user => ({
-          value: user.id,
-          text: user.id === ctx.session.userId ? '>> me <<' : user.fullName,
-          selected: task.assignedToId === user.id,
-        }));
+        const users = buildSelectUser(rawUsers, ctx.session.userId, task.assignedToId);
 
         const rawTags = await task.getTags();
         const tags = rawTags.map(tag => tag.name).join(', ');
         task.tags = tags;
-
         log('Prepared tags: %o', tags);
 
-        const availableStates = fsm(task.status.name).transitions();
-        log('Available states: %o', availableStates);
-        const availableStatuses = await TaskStatus.findAll({
-          where: {
-            name: {
-              $in: availableStates,
-            },
-          },
-        });
-        const statuses = [...availableStatuses, task.status].map(status => ({
-          value: status.id,
-          text: status.name,
-          selected: status.id === task.status.id,
-        }));
+        const statuses = await buildSelectStatus(task.status);
         log('Statuses: %o', statuses);
         ctx.render('tasks/edit', { f: buildFormObj(task), task, users, tags, statuses });
       } else {
@@ -214,13 +191,8 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
         ctx.redirect(router.url('root'));
       } catch (e) {
         log(e);
-        log(buildFormObj(task, e));
         const rawUsers = await User.findAll();
-        const users = rawUsers.map(user => ({
-          value: user.id,
-          text: user.id === ctx.session.userId ? '>> me <<' : user.fullName,
-          selected: task.assignedToId === user.id,
-        }));
+        const users = buildSelectUser(rawUsers, ctx.session.userId, task.assignedToId);
         ctx.render('tasks/new', { f: buildFormObj(task, e), users, tags: form.tags });
       }
     })
@@ -269,7 +241,16 @@ export default (router, { Task, User, Tag, TaskStatus, logger }) => {
         ctx.redirect(router.url('tasks'));
       } catch (e) {
         log(e);
-        ctx.redirect(router.url('tasks'));
+        const rawUsers = await User.findAll();
+        const users = buildSelectUser(rawUsers, ctx.session.userId, task.assignedToId);
+        const statuses = await buildSelectStatus(status);
+        ctx.render('tasks/edit', {
+          f: buildFormObj(taskBuild, e),
+          task: { id: ctx.params.id, ...taskBuild },
+          users,
+          statuses,
+          tags: form.tags,
+        });
       }
     })
 

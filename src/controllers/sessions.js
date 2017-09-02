@@ -1,7 +1,7 @@
 import buildFormObj from '../lib/formObjectBuilder';
 import encrypt from '../lib/secure';
 
-export default (router, { User, logger }) => {
+export default (router, { User }) => {
   router
     .get('newSession', '/session/new', async (ctx) => {
       const data = {};
@@ -15,7 +15,6 @@ export default (router, { User, logger }) => {
           email,
         },
       });
-      logger(user);
       if (user && user.passwordDigest === encrypt(password)) {
         ctx.session.userId = user.id;
         ctx.redirect(router.url('root'));

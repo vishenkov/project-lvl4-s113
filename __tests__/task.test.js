@@ -124,6 +124,7 @@ describe('requests', () => {
       .send({
         form: {
           ...task,
+          status: 1,
           assignedTo: user1.id,
         },
       });

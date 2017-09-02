@@ -8,4 +8,4 @@ block content
     +select(f, 'assignedTo', users, { labelName: 'Assign to' })
     +select(f, 'status', statuses, { labelName: 'Task status' })
     +input(f, 'tags', { labelName: 'Tags' })
-    +button(f)
+    +button(f, { value: 'Save changes', decoration: 'primary' })

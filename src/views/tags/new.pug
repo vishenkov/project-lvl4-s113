@@ -4,4 +4,4 @@ block content
   h3 New Tag
   +formFor(f, { url: urlFor('tags'), method: 'post' })
     +input(f, 'name', { labelName: 'Name' })
-    +button(f)
+    +button(f, { value: 'Create tag', decoration: 'success' })
